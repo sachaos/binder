@@ -9,6 +9,6 @@ db  : docker logs -f db
 
 # Execute commands & show logs
 $ cat commands | binder
-app : log line of app
-db  : log line of db
+app| log line of app
+ db| log line of db
 ```
