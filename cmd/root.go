@@ -27,7 +27,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "stream",
+	Use:   "binder",
 	Short: "Run multiple commands & show logs",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -49,7 +49,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.stream.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.binder.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -69,9 +69,9 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".stream" (without extension).
+		// Search config in home directory with name ".binder" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".stream")
+		viper.SetConfigName(".binder")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

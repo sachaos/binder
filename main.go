@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/sachaos/stream/cmd"
+import "github.com/sachaos/binder/cmd"
 
 func main() {
 	cmd.Execute()
