@@ -2,15 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
-	"os/signal"
-	"strings"
-
 	"github.com/logrusorgru/aurora"
 	"github.com/segmentio/textio"
 	"github.com/spf13/cobra"
-	"golang.org/x/sync/errgroup"
+	"io"
+	"os"
+	"os/exec"
+	"sync"
 )
 
 var (
@@ -36,15 +34,16 @@ func getColor() aurora.Color {
 	return aurora.BoldFm | color
 }
 
+type Bind struct {
+	Cmd    *exec.Cmd
+	Prefix string
+}
+
 func Run(cmd *cobra.Command, args []string) error {
 	sources, err := ParseSource(os.Stdin)
 	if err != nil {
 		return err
 	}
-
-	eg := errgroup.Group{}
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals)
 
 	maxL := 0
 	for _, source := range sources {
@@ -54,33 +53,38 @@ func Run(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	cmds := make([]*exec.Cmd, len(sources))
+	binds := make([]*Bind, len(sources))
 	for i, source := range sources {
-		cmdSlice := strings.Split(source.Command, " ")
+		color := getColor()
+		prefix := aurora.Colorize(fmt.Sprintf("%*s", maxL, source.Name)+"| ", color).String()
 
-		cmd := exec.Command(cmdSlice[0], cmdSlice[1:]...)
-		cmd.Stdout = textio.NewPrefixWriter(os.Stdout, aurora.Colorize(fmt.Sprintf("%*s", maxL, source.Name)+"| ", getColor()).String())
-		cmd.Stderr = textio.NewPrefixWriter(os.Stderr, aurora.Colorize(fmt.Sprintf("%*s", maxL, source.Name)+"| ", getColor()).String())
+		cmd := exec.Command("sh", "-c", source.Command)
+		cmd.Stdout = textio.NewPrefixWriter(os.Stdout, prefix)
+		cmd.Stderr = textio.NewPrefixWriter(os.Stderr, prefix)
 
-		err := cmd.Start()
-		if err != nil {
-			return err
-		}
-
-		cmds[i] = cmd
-
-		eg.Go(func() error {
-			return cmd.Wait()
-		})
-	}
-
-	s := <-signals
-	for _, cmd := range cmds {
-		err = cmd.Process.Signal(s)
-		if err != nil {
-			return err
+		binds[i] = &Bind{
+			Cmd:    cmd,
+			Prefix: prefix,
 		}
 	}
 
-	return eg.Wait()
+	var wg sync.WaitGroup
+	for _, bind := range binds {
+		err := bind.Cmd.Start()
+		if err != nil {
+			return fmt.Errorf("start cmd: %w", err)
+		}
+
+		wg.Add(1)
+		go func(bind *Bind) {
+			defer wg.Done()
+			err := bind.Cmd.Wait()
+			if err != nil {
+				io.WriteString(os.Stderr, bind.Prefix + err.Error())
+			}
+		}(bind)
+	}
+
+	wg.Wait()
+	return nil
 }

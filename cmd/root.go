@@ -27,8 +27,9 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "binder",
-	Short: "Run multiple commands & show logs",
+	Use:     "binder",
+	Short:   "Run multiple commands & show logs",
+	Version: "0.0.2",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	RunE: Run,
