@@ -2,19 +2,34 @@
 
 Execute commands from STDOUT, and show logs of those.
 
+![demo](./img/demo.gif)
+
 ## Usage
 
 ### Basic
 
+`binder` execute commands passed from STDOUT, and show logs of those.
+Commands must be separated by line feed.
+
 ```sh
 $ cat commands
-app : docker logs -f app
-db  : docker logs -f db
+docker logs -f app
+docker logs -f db
 
 # Execute commands & show logs
 $ cat commands | binder
-app| log line of app
- db| log line of db
+docker logs -f app| log line of app
+ docker logs -f db| log line of db
+```
+
+### Specify prefix
+
+`binder` use command itself as prefix.
+But you can specify the prefix optionally.
+Use the following format to specify the prefix.
+
+```
+{prefix}: {command}
 ```
 
 ### See all Docker containers log
