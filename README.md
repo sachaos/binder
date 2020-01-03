@@ -1,6 +1,6 @@
 # binder
 
-Execute commands from STDOUT, and show logs of those.
+Execute commands from STDIN, and show logs of those.
 
 ![demo](./img/demo.gif)
 
@@ -8,7 +8,7 @@ Execute commands from STDOUT, and show logs of those.
 
 ### Basic
 
-`binder` execute commands passed from STDOUT, and show logs of those.
+`binder` execute commands passed from STDIN, and show logs of those.
 Commands must be separated by line feed.
 
 ```sh
