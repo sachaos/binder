@@ -47,7 +47,7 @@ Go to [release page](https://github.com/sachaos/binder/releases) and download.
 or
 
 ```shell
-$ wget https://github.com/sachaos/binder/releases/download/v0.0.1/binder_darwin_amd64 -O /usr/local/bin/binder
+$ wget https://github.com/sachaos/binder/releases/download/v0.0.2/binder_darwin_amd64 -O /usr/local/bin/binder
 $ chmod +x /usr/local/bin/binder
 ```
 
