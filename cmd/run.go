@@ -80,7 +80,7 @@ func Run(cmd *cobra.Command, args []string) error {
 			defer wg.Done()
 			err := bind.Cmd.Wait()
 			if err != nil {
-				io.WriteString(os.Stderr, bind.Prefix + err.Error())
+				io.WriteString(os.Stderr, bind.Prefix + err.Error() + "\n")
 			}
 		}(bind)
 	}
